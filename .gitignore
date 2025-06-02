@@ -1,0 +1,5 @@
+node_modules
+.turbo
+volumes/
+postgres_data/
+.env
