@@ -1,0 +1,194 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Conventions TypeScript
+
+## Configuration
+
+Nous utilisons TypeScript en mode strict avec les configurations suivantes :
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  }
+}
+```
+
+## Types vs Interfaces
+
+### Quand Utiliser `type`
+
+```typescript
+// ✅ Pour les unions
+type Status = "pending" | "success" | "error";
+
+// ✅ Pour les types utilitaires
+type Nullable<T> = T | null;
+
+// ✅ Pour les types complexes
+type UserWithPosts = {
+  user: User;
+  posts: Post[];
+};
+```
+
+### Quand Utiliser `interface`
+
+```typescript
+// ✅ Pour les objets de données
+interface User {
+  id: string;
+  name: string;
+}
+
+// ✅ Pour l'héritage
+interface AdminUser extends User {
+  permissions: string[];
+}
+
+// ✅ Pour les props de composants
+interface ButtonProps {
+  variant: "primary" | "secondary";
+  onClick: () => void;
+}
+```
+
+## Bonnes Pratiques
+
+### 1. Nommage Explicite
+
+```typescript
+// ✅ Bon
+interface CreateUserParams {
+  email: string;
+  password: string;
+}
+
+// 🚫 À éviter
+interface Params {
+  email: string;
+  password: string;
+}
+```
+
+### 2. Génériques
+
+```typescript
+// ✅ Bon
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+}
+
+// Usage
+const response: ApiResponse<User> = await api.get("/user");
+```
+
+### 3. Type Inference
+
+```typescript
+// ✅ Bon
+const users = ["John", "Jane"]; // type: string[]
+
+// 🚫 À éviter
+const users: string[] = ["John", "Jane"];
+```
+
+## Pattern React Query
+
+### Types de Paramètres
+
+```typescript
+interface GetUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+```
+
+### Types de Réponse
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  meta: {
+    total: number;
+    page: number;
+  };
+}
+
+// Usage
+const getUsers = async (params: GetUsersParams): Promise<ApiResponse<User[]>> => {
+  const response = await api.get("/users", { params });
+  return response.data;
+};
+```
+
+## Types Utilitaires
+
+### Helpers Communs
+
+```typescript
+// Rendre toutes les propriétés optionnelles
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+
+// Rendre toutes les propriétés requises
+type Required<T> = {
+  [P in keyof T]-?: T[P];
+};
+
+// Rendre toutes les propriétés en lecture seule
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+```
+
+### Types Personnalisés
+
+```typescript
+// Type pour les props de style
+type StyleProps = {
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// Type pour les handlers d'événements
+type EventHandler<T = Element> = (event: React.SyntheticEvent<T>) => void;
+
+// Type pour les refs
+type Ref<T> = React.RefObject<T> | ((instance: T | null) => void);
+```
+
+:::tip Conseil
+Utilisez les types utilitaires de TypeScript quand c'est possible plutôt que de réinventer la roue.
+:::
+
+## Validation des Types
+
+### zod
+
+Nous utilisons `zod` pour la validation des données :
+
+```typescript
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  age: z.number().min(0),
+});
+
+type User = z.infer<typeof UserSchema>;
+```

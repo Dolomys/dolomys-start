@@ -1,0 +1,134 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Créer une Nouvelle Feature
+
+Ce guide vous montrera comment ajouter une nouvelle fonctionnalité au projet en suivant nos conventions.
+
+## Étapes
+
+### 1. Créer la Structure
+
+Commencez par créer la structure de dossiers :
+
+```bash
+features/
+└── ma-feature/
+    ├── api/
+    │   ├── get-data.ts
+    │   └── create-data.ts
+    ├── components/
+    │   ├── FeatureComponent.tsx
+    │   └── index.ts
+    └── types/
+        └── types.ts
+```
+
+### 2. Définir les Types
+
+```typescript title="features/ma-feature/types/types.ts"
+export interface FeatureData {
+  id: string;
+  name: string;
+  // ... autres champs
+}
+
+export interface FeatureParams {
+  limit?: number;
+  search?: string;
+}
+```
+
+### 3. Implémenter les Appels API
+
+```typescript title="features/ma-feature/api/get-data.ts"
+import { FeatureData, FeatureParams } from "../types/types";
+
+export const getFeatureDataQueryOptions = (params: FeatureParams) => ({
+  queryKey: ["feature-data", params],
+  queryFn: () => getFeatureData(params),
+});
+
+export const getFeatureData = async (params: FeatureParams) => {
+  const response = await api.get<ApiResponse<FeatureData[]>>("/feature-data", { params });
+  return response.data;
+};
+
+export const useGetFeatureData = (params: FeatureParams) => {
+  return useQuery(getFeatureDataQueryOptions(params));
+};
+```
+
+### 4. Créer les Composants
+
+```typescript title="features/ma-feature/components/FeatureComponent.tsx"
+import { useGetFeatureData } from "../api/get-data";
+
+export function FeatureComponent() {
+  const { data, isLoading } = useGetFeatureData({ limit: 10 });
+
+  if (isLoading) return <Spinner />;
+
+  return (
+    <div>
+      {data?.map((item) => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 5. Exporter les Composants
+
+```typescript title="features/ma-feature/components/index.ts"
+export * from "./FeatureComponent";
+```
+
+### 6. Intégrer dans l'App Router
+
+```typescript title="app/(app)/ma-feature/page.tsx"
+import { FeatureComponent } from "@/features/ma-feature/components";
+
+export default function FeaturePage() {
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-xl font-bold mb-4">Ma Feature</h1>
+      <FeatureComponent />
+    </div>
+  );
+}
+```
+
+## Checklist
+
+✅ Structure de dossiers correcte  
+✅ Types bien définis  
+✅ Pattern React Query respecté  
+✅ Composants exportés correctement  
+✅ Page créée dans App Router  
+✅ Tests ajoutés (si nécessaire)
+
+:::tip Conseil
+Gardez vos composants petits et focalisés sur une seule responsabilité.
+Extrayez la logique commune dans des hooks personnalisés.
+:::
+
+## Exemple Complet
+
+Vous pouvez trouver un exemple complet dans la feature `creators` :
+
+```
+features/creators/
+├── api/
+│   ├── get-creators.ts
+│   └── create-creator.ts
+├── components/
+│   ├── CreatorCard.tsx
+│   ├── CreatorsList.tsx
+│   └── index.ts
+└── types/
+    └── creator.ts
+```

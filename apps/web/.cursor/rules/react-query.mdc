@@ -1,0 +1,138 @@
+---
+description: create api request and handle back end state
+globs: 
+alwaysApply: false
+---
+# Patterns React Query
+
+## Vue d'ensemble
+
+React Query est notre solution de gestion d'état serveur. Nous suivons un pattern standardisé pour tous les appels API.
+
+## Structure Standard
+
+Chaque appel API suit une structure en 4 parties :
+
+```typescript
+// 1. Définition des params
+export interface GetAllCreatorsParams {
+  seed?: string;
+  usernames?: string[];
+  limit?: number;
+  search?: string;
+}
+
+// 2. Query Options pour la réutilisabilité
+export const getAllCreatorsQueryOptions = (params: GetAllCreatorsParams) => ({
+  queryKey: ["creators", params],
+  queryFn: () => getAllCreators(params),
+});
+
+// 3. Fonction d'appel API pure
+export const getAllCreators = async (params: GetAllCreatorsParams) => {
+  const response = await api.get<ApiResponse<CreatorLight[]>>("/creators/light", { params });
+  return response.data;
+};
+
+// 4. Hook custom pour l'utilisation dans les composants
+export const useGetAllCreators = (params: GetAllCreatorsParams) => {
+  return useQuery(getAllCreatorsQueryOptions(params));
+};
+```
+
+## Bonnes Pratiques
+
+### 1. Séparation des Concerns
+
+:::tip Pourquoi ?
+Cette séparation permet de :
+
+- Réutiliser les query options
+- Tester facilement les fonctions pures
+- Maintenir une cohérence dans le codebase
+  :::
+
+### 2. Typage Strict
+
+```typescript
+// ✅ Bon
+interface UserResponse {
+  id: string;
+  name: string;
+}
+
+const getUser = async (id: string): Promise<UserResponse> => {
+  const response = await api.get(`/users/${id}`);
+  return response.data;
+};
+
+// 🚫 À éviter
+const getUser = async (id) => {
+  const response = await api.get(`/users/${id}`);
+  return response.data;
+};
+```
+
+### 3. Gestion des QueryKeys
+
+```typescript
+// ✅ Bon
+const queryKey = ["users", { id, filters }];
+
+// 🚫 À éviter
+const queryKey = ["users" + id + JSON.stringify(filters)];
+```
+
+## Utilisation dans les Composants
+
+```typescript
+function CreatorsList() {
+  const { data, isLoading } = useGetAllCreators({
+    limit: 10,
+    search: searchTerm,
+  });
+
+  if (isLoading) return <Spinner />;
+
+  return (
+    <ul>
+      {data?.creators.map((creator) => (
+        <CreatorCard key={creator.id} creator={creator} />
+      ))}
+    </ul>
+  );
+}
+```
+
+## Mutations
+
+Pour les mutations, suivez un pattern similaire :
+
+```typescript
+// 1. Types
+interface CreateCreatorData {
+  name: string;
+  bio: string;
+}
+
+// 2. Mutation function
+const createCreator = async (data: CreateCreatorData) => {
+  const response = await api.post("/creators", data);
+  return response.data;
+};
+
+// 3. Hook
+export const useCreateCreator = () => {
+  return useMutation({
+    mutationFn: createCreator,
+    onSuccess: () => {
+      // Invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["creators"] });
+    },
+  });
+};
+```
+
+:::caution Important
+N'oubliez pas d'invalider les queries appropriées après une mutation réussie !
+:::

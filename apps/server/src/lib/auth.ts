@@ -6,21 +6,20 @@ import { db } from "../db";
 import * as schema from "../db/schema/auth";
 
 export const auth = betterAuth({
-	database: drizzleAdapter(db, {
-		provider: "pg",
-
-		schema: schema,
-	}),
-	trustedOrigins: [process.env.CORS_ORIGIN || ""],
-	emailAndPassword: {
-		enabled: true,
-	},
-	plugins: [
-		admin({
-			ac: access,
-			roles,
-			defaultRole: Role.Employee,
-			adminRoles: [Role.Admin],
-		}),
-	],
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema: schema,
+  }),
+  trustedOrigins: [process.env.CORS_ORIGIN || ""],
+  emailAndPassword: {
+    enabled: true,
+  },
+  plugins: [
+    admin({
+      ac: access,
+      roles,
+      defaultRole: Role.Employee,
+      adminRoles: [Role.Admin],
+    }),
+  ],
 });

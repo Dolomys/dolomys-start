@@ -1,9 +1,9 @@
-import { Loader2 } from "lucide-react";
-
-export default function Loader() {
-	return (
-		<div className="flex h-full items-center justify-center pt-8">
-			<Loader2 className="animate-spin" />
-		</div>
-	);
+export function BounceLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center space-x-2 bg-background">
+      <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+      <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+      <div className="h-3 w-3 animate-bounce rounded-full bg-primary" />
+    </div>
+  );
 }

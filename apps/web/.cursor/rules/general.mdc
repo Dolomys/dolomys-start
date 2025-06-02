@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Introduction à Keendom Frontend
+
+Bienvenue dans la documentation du frontend de Keendom. Cette documentation vous guidera à travers l'architecture, les patterns et les bonnes pratiques du projet.
+
+## Vue d'ensemble
+
+Keendom Frontend est construit avec :
+
+- **React + Vite + Tanstack router**
+- **TypeScript** en mode strict
+- **TailwindCSS** pour le styling
+- **React Query** pour la gestion du state serveur
+- **Axios** pour les appels API
+
+## Architecture
+
+Le projet suit une architecture **feature-first**, conçue pour la scalabilité et la maintenabilité. Cette approche nous permet de :
+
+- Isoler les fonctionnalités
+- Maintenir une séparation claire des responsabilités
+- Faciliter le développement en équipe
+- Simplifier la maintenance
+
+:::tip Ce que vous apprendrez
+Cette documentation vous montrera comment :
+
+- Organiser votre code selon notre architecture feature-first
+- Implémenter les patterns React Query
+- Suivre nos conventions de code
+- Créer de nouvelles fonctionnalités
+  :::

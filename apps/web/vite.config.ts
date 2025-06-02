@@ -6,30 +6,30 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-	plugins: [
-		tailwindcss(),
-		TanStackRouterVite({}),
-		react(),
-		VitePWA({
-			registerType: "autoUpdate",
-			manifest: {
-				name: "dolomys-starter",
-				short_name: "dolomys-starter",
-				description: "dolomys-starter - PWA Application",
-				theme_color: "#0c0c0c",
-			},
-			pwaAssets: {
-				disabled: false,
-				config: true,
-			},
-			devOptions: {
-				enabled: true,
-			},
-		}),
-	],
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
-		},
-	},
+  plugins: [
+    tailwindcss(),
+    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        name: "dolomys-starter",
+        short_name: "dolomys-starter",
+        description: "dolomys-starter - PWA Application",
+        theme_color: "#0c0c0c",
+      },
+      pwaAssets: {
+        disabled: false,
+        config: true,
+      },
+      devOptions: {
+        enabled: true,
+      },
+    }),
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });

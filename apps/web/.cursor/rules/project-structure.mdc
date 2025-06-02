@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Structure du Projet
+
+## Organisation des Dossiers
+
+La structure du projet suit une organisation logique et modulaire :
+
+```
+src/
+├── routes/          # Routes tanstack
+├── features/      # Modules fonctionnels
+├── components/    # Composants partagés
+├── lib/          # Utilitaires et configurations
+├── hooks/        # Hooks React partagés
+└── types/        # Types TypeScript globaux
+```
+
+### Le Dossier `routes`
+
+Le dossier routes contient la configuration de TanStack Router. Il centralise :
+-Les layouts partagés (via RouteLayout)
+-Les pages (sous forme de composants associés à des routes)
+-La configuration complète du système de routing (arbre des routes, paramètres dynamiques, etc.)
+
+C’est ici que l’on déclare l’ensemble de la structure de navigation de l’application.
+
+### Le Dossier `features`
+
+C'est le cœur de notre architecture. Chaque feature est un module autonome :
+
+```
+features/creators/
+├── api/          # Appels API et React Query hooks
+├── components/   # Composants spécifiques à la feature
+└── types/       # Types et interfaces
+```
+
+:::info Pourquoi cette structure ?
+Cette organisation permet de :
+
+- Trouver rapidement le code lié à une fonctionnalité
+- Éviter les dépendances circulaires
+- Faciliter le refactoring
+- Maintenir une séparation claire des responsabilités
+  :::
+
+### Les Dossiers Partagés
+
+- `components/` : Composants UI réutilisables
+- `lib/` : Configurations et utilitaires
+- `hooks/` : Hooks React partagés
+- `types/` : Types TypeScript globaux
+
+## Bonnes Pratiques
+
+1. **Isolation des Features**
+
+   - Chaque feature doit être autonome
+   - Minimiser les dépendances entre features
+   - Utiliser les dossiers partagés avec parcimonie
+
+2. **Organisation des Imports**
+
+   ```typescript
+   // ✅ Bon
+   import { Button } from "@/components/ui";
+   import { useUser } from "@/features/user";
+
+   // 🚫 À éviter
+   import { Button } from "../../components/ui";
+   import { useUser } from "../user/hooks";
+   ```
+
+3. **Nommage des Fichiers**
+   - Utilisez des noms descriptifs
+   - Suivez une convention cohérente
+   - Préfixez les types avec `types.`
+   - Suffixez les hooks avec `.hook`
